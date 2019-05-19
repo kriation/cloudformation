@@ -10,17 +10,18 @@ Resources:
   SecurityRole:
     Type: AWS::IAM::Role
     Properties:
-        AssumeRolePolicyDocument:
-          Version: 2012-10-17
-          Statement:
-            - Effect: Allow
-              Principal:
-                AWS:
-                  Ref: Principal
-              Action:
-                - sts:AssumeRole
-        ManagedPolicyArns:
-          - arn:aws:iam::aws:policy/AdministratorAccess
-        MaxSessionDuration: 43200
-        Path: /security/
-        RoleName: security-admin
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              AWS:
+                Ref: Principal
+            Action:
+              - sts:AssumeRole
+      ManagedPolicyArns:
+        - arn:aws:iam::aws:policy/AdministratorAccess
+      MaxSessionDuration: 43200
+      Path: /security/
+      RoleName: security-admin
