@@ -1,0 +1,71 @@
+AWSTemplateFormatVersion: 2010-09-09
+Description: >
+  This template instantiates a CodeBuild project to build a Jekyll site from
+  a CodeCommit source, and deploy it to S3
+Parameters:
+  ProjectName:
+    Type: String
+    Description: Name of the CodeBuild project
+  TargetS3BucketName:
+    Type: String
+Resources:
+  CodeBuildLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub '/aws/codebuild/${ProjectName}'
+  CodeBuildRole:
+    Type: AWS::IAM::Role
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: 2012-10-17
+        Statement:
+          -
+            Effect: Allow
+            Principal:
+              Service: codebuild.amazonaws.com
+            Action: sts:AssumeRole
+      Policies:
+        -
+          PolicyName: codebuild-s3-jeykll
+          PolicyDocument:
+            Version: 2012-10-17
+            Statement:
+              -
+                Effect: Allow
+                Action:
+                  - logs:CreateLogStream
+                  - logs:PutLogEvents
+                Resource: !GetAtt CodeBuildLogGroup.Arn
+              -
+                Effect: Allow
+                Action: s3:PutObject
+                Resource: !Sub 'arn:aws:s3:::${TargetS3BucketName}/*'
+              -
+                Effect: Allow
+                Action: codecommit:GitPull
+                Resource:
+                  Fn::ImportValue:
+                    !Sub 'ARN-${ProjectName}'
+      RoleName: codepipeline-role-jekyll
+  JekyllSite:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: !Ref ProjectName
+      ServiceRole: !Ref CodeBuildRole
+      Artifacts:
+        Type: S3
+        EncryptionDisabled: true
+        Location: !Ref TargetS3BucketName
+        Name: '/'
+      Cache:
+        Type: NO_CACHE
+      Environment:
+        Type: LINUX_CONTAINER
+        ComputeType: BUILD_GENERAL1_SMALL
+        Image: aws/codebuild/standard:2.0
+      Source:
+        Type: CODECOMMIT
+        Location:
+          Fn::ImportValue:
+            !Sub 'RepoURL-${ProjectName}'
+        GitCloneDepth: 1
