@@ -18,6 +18,8 @@ Outputs:
   RepoCloneURLHTTP:
     Description: The HTTP clone URL for the repository
     Value: !GetAtt Repository.CloneUrlHttp
+    Export:
+      Name: !Sub 'RepoURL-${RepositoryName}'
   RepoCloneURLSSH:
     Description: The SSH clone URL for the repository
     Value: !GetAtt Repository.CloneUrlSsh
