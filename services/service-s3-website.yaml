@@ -56,6 +56,11 @@ Resources:
       DistributionConfig:
         Aliases: 
           - !Sub 'www.${SiteDomainName}'
+        CustomErrorResponses:
+          -
+            ErrorCode: 403
+            ResponseCode: 404
+            ResponsePagePath: /404.html
         DefaultCacheBehavior:
             Compress: true
             ForwardedValues:
