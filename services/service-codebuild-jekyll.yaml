@@ -11,6 +11,9 @@ Parameters:
   SQSQueueArn:
     Type: String
     Description: Arn of SQS Queue
+  SourceBranch:
+    Type: String
+    Description: Reference to build from https://docs.aws.amazon.com/codebuild/latest/userguide/sample-source-version.html
 Resources:
   CodeBuildLogGroup:
     Type: AWS::Logs::LogGroup
@@ -76,3 +79,4 @@ Resources:
           Fn::ImportValue:
             !Sub 'RepoURL-${ProjectName}'
         GitCloneDepth: 1
+      SourceVersion: !Ref SourceBranch
