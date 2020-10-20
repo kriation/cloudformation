@@ -15,11 +15,12 @@ Resources:
       LifecycleConfiguration:
         Rules:
           -
-            Id: Archive
+            Id: archive-to-expire
             Status: Enabled
+            ExpirationInDays: 365
             Transitions:
               -
-                StorageClass: GLACIER
+                StorageClass: STANDARD_IA
                 TransitionInDays: 90
   LogBucketPolicy:
     Type: AWS::S3::BucketPolicy
