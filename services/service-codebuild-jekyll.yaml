@@ -22,6 +22,11 @@ Resources:
     Type: AWS::Logs::LogGroup
     Properties:
       LogGroupName: !Sub '/aws/codebuild/${ProjectName}'
+  CodeBuildCacheS3:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName:
+        !Sub '${AWS::AccountId}-codebuild-cache'
   CodeBuildRole:
     Type: AWS::IAM::Role
     Properties:
@@ -59,6 +64,18 @@ Resources:
                 Effect: Allow
                 Action: sqs:SendMessage
                 Resource: !Ref SQSQueueArn
+              -
+                Effect: Allow
+                Action: s3:ListBucket
+                Resource: !GetAtt CodeBuildCacheS3.Arn
+              -
+                Effect: Allow
+                Action:
+                  - s3:PutObject
+                  - s3:GetObject
+                Resource: !Sub
+                  - '${CodeBuildCacheS3Arn}/*'
+                  - { CodeBuildCacheS3Arn: !GetAtt CodeBuildCacheS3.Arn }
       RoleName: codepipeline-role-jekyll
   JekyllSite:
     Type: AWS::CodeBuild::Project
@@ -71,7 +88,8 @@ Resources:
         Location: !Ref TargetS3BucketName
         Name: '/'
       Cache:
-        Type: NO_CACHE
+        Type: S3
+        Location: !Ref CodeBuildCacheS3
       Environment:
         Type: LINUX_CONTAINER
         ComputeType: BUILD_GENERAL1_SMALL
