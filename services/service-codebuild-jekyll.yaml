@@ -46,10 +46,14 @@ Resources:
             Statement:
               -
                 Effect: Allow
-                Action:
-                  - logs:CreateLogStream
-                  - logs:PutLogEvents
+                Action: logs:CreateLogStream
                 Resource: !GetAtt CodeBuildLogGroup.Arn
+              -
+                Effect: Allow
+                Action: logs:PutLogEvents
+                Resource: !Sub
+                  - '${CodeBuildLogGroupArn}:log-stream:*'
+                  - { CodeBuildLogGroupArn: !Select [0, !Split [':*', !GetAtt CodeBuildLogGroup.Arn ]]}
               -
                 Effect: Allow
                 Action: s3:PutObject
