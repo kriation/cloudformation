@@ -22,7 +22,9 @@ Resources:
               - Effect: Allow
                 Action:
                 - s3:ListBucket
+                - s3:GetBucketLocation
                 - s3:GetObject
+                - s3:GetObjectVersion
                 Resource:
                 - !Sub 'arn:aws:s3:::${S3BucketName}'
                 - !Sub 'arn:aws:s3:::${S3BucketName}/*'
